@@ -1,0 +1,96 @@
+name: test-project
+recipe: drupal9
+config:
+  webroot: docroot
+  xdebug: true
+  php: '8.1'
+  config:
+    php: .vscode/php.ini
+keys:
+  - develop_server.key
+services:
+  appserver:
+    build:
+      - 'composer global require drupal/coder'
+  # pma:
+  #   type: phpmyadmin
+  #   hosts:
+  #     - database
+proxy:
+  appserver:
+    - test-project.lndo.site
+  # pma:
+  #   - pma-ed9.lndo.site
+tooling:
+  drush:
+    service: appserver
+    env:
+      DRUSH_OPTIONS_URI: "https://test-project.lndo.site"
+
+  xdebug-on:
+    service: appserver
+    description: Enable xdebug for Apache.
+    cmd: docker-php-ext-enable xdebug && /etc/init.d/apache2 reload && echo "Enabling xdebug"
+    user: root
+
+  xdebug-off:
+    service: appserver
+    description: Disable xdebug for Apache.
+    cmd: rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload && echo "Disabling xdebug"
+    user: root
+
+  reload-apache:
+    server: appserver
+    description: Reload apache service.
+    cmd: /etc/init.d/apache2 reload
+    user: root
+
+  drupalcs:
+    service: appserver
+    cmd: "phpcs --colors --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml --ignore=node_modules,bower_components,vendor,css"
+    description: Run phpcs Drupal Coding Standards against a given file or directory.
+
+  drupalcbf:
+    service: appserver
+    cmd: "phpcbf --colors --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml --ignore=node_modules,bower_components,vendor,css"
+    description: Automatically fix Drupal coding standards suggestions.
+
+  phpunit:
+    service: appserver
+    cmd: vendor/bin/phpunit --configuration web/core
+    description: Run PHPUnit tests on a specific file or Drupal module.
+
+  drupal-check:
+    service: appserver
+    cmd: vendor/bin/drupal-check -ad
+    description: Check Drupal code for deprecations and discover bugs via static analysis.
+
+  dreset:
+    service: appserver
+    description: Update local db by remote db, reset config.
+    cmd: cd /app && drush sql-drop -y && drush sql:sync @remote.dev @self -y && drush cr -y && drush updatedb -y && drush cim -y && drush cr -y && drush uli /
+    user: www-data
+
+  cex:
+    service: appserver
+    description: Drush export config.
+    cmd: cd /app && drush cex -y
+    user: www-data
+
+  cim:
+    service: appserver
+    description: Drush import config.
+    cmd: cd /app && drush cim -y
+    user: www-data
+
+  zh-import:
+    service: appserver
+    description: Drush import zh-hant language.
+    cmd: drush locale:import zh-hant --override=all /app/translations/zh-hant.po
+    user: www-data
+
+  zh-export:
+    service: appserver
+    description: Drush import zh-hant language.
+    cmd: drush locale:export zh-hant > translations/zh-hant.po
+    user: www-data

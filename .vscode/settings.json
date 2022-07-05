@@ -1,0 +1,19 @@
+{
+  "php.validate.executablePath": ".vscode/bin/php",
+  "php.debug.executablePath": ".vscode/bin/php",
+  "intelephense.environment.documentRoot": "docroot",
+  "intelephense.environment.phpVersion": "7.4.29",
+  "phpsab.executablePathCBF": ".vscode/bin/phpcbf",
+  "phpsab.executablePathCS": ".vscode/bin/phpcs",
+  "phpsab.fixerArguments": [
+    "--colors",
+    "--extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml",
+    "--ignore=node_modules,bower_components,vendor,css"
+  ],
+  "phpsab.snifferArguments": [
+    "--colors",
+    "--extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml",
+    "--ignore=node_modules,bower_components,vendor,css"
+  ],
+  "phpsab.standard": "Drupal,DrupalPractice"
+}
