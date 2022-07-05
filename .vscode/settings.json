@@ -2,7 +2,7 @@
   "php.validate.executablePath": ".vscode/bin/php",
   "php.debug.executablePath": ".vscode/bin/php",
   "intelephense.environment.documentRoot": "docroot",
-  "intelephense.environment.phpVersion": "7.4.29",
+  "intelephense.environment.phpVersion": "8.1.0",
   "phpsab.executablePathCBF": ".vscode/bin/phpcbf",
   "phpsab.executablePathCS": ".vscode/bin/phpcs",
   "phpsab.fixerArguments": [
