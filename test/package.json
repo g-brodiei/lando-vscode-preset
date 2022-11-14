@@ -1,0 +1,15 @@
+{
+  "name": "cypress_drupal_testing",
+  "scripts": {
+    "test:headless": "cypress run --headless --browser chrome",
+    "test:head": "cypress run --browser chrome",
+    "open": "cypress open",
+    "vr:test": "as-a applitools npx cypress run --headless --browser chrome --spec \"cypress/integration/vr_recipe_listing_pages.spec.js\""
+
+  },
+  "devDependencies": {
+    "cypress": "^10.11.0",
+    "@applitools/eyes-cypress": "latest",
+    "as-a": "^2.2.1"
+  }
+}
