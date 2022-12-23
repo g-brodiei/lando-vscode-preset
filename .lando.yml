@@ -1,4 +1,4 @@
-name: test-project
+name: example
 recipe: drupal9
 config:
   webroot: docroot
@@ -19,14 +19,14 @@ services:
   #     - database
 proxy:
   appserver:
-    - test-project.lndo.site
+    - example.lndo.site
   # pma:
   #   - pma-ed9.lndo.site
 tooling:
   drush:
     service: appserver
     env:
-      DRUSH_OPTIONS_URI: "https://test-project.lndo.site"
+      DRUSH_OPTIONS_URI: "https://example.lndo.site"
 
   xdebug-on:
     service: appserver
@@ -77,7 +77,7 @@ tooling:
       - drush updatedb -y
       - drush cim -y
       - drush cr -y
-      - drush uli / -l https://ruiyang.lndo.site
+      - drush uli / -l https://example.lndo.site
     user: www-data
 
   updb:
