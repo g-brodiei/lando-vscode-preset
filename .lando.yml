@@ -68,8 +68,26 @@ tooling:
   dreset:
     service: appserver
     description: Update local db by remote db, reset config.
-    cmd: cd /app && drush sql-drop -y && drush sql:sync @remote.dev @self -y && drush cr -y && drush updatedb -y && drush cim -y && drush cr -y && drush uli /
+    cmd:
+      - cd /app
+      - drush sql-drop -y
+      - drush sql:sync @remote.dev @self -y
+      - drush cr -y
+      - drush updatedb -y
+      - drush cim -y
+      - drush cr -y
+      - drush uli / -l https://ruiyang.lndo.site
     user: www-data
+
+  updb:
+    service: appserver
+    description: Update database and export config
+    cmd:
+      - cd /app
+      - drush cr
+      - drush updatedb -y
+      - drush cr
+      - drush cex -y
 
   cex:
     service: appserver
