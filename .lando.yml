@@ -4,6 +4,7 @@ config:
   webroot: docroot
   xdebug: true
   php: '8.1'
+  composer_version: '2.4.4'
   config:
     php: .vscode/php.ini
 keys:
