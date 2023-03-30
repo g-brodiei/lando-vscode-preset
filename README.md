@@ -1,45 +1,79 @@
-# 專案環境初始設定檔
+# Initial setup for local dev environment
+
+This repo contains VSCode setting files for smoother Drupal development.
+PHP Sniffer & Beautifier extension will utilize phpcs and phpcbf within lando's container to lint on file save and beautify it if configured.
+
+## Prerequisites
+* Download and created a fresh Drupal directory following [Drupal.org](https://www.drupal.org/download) directions.
+* Install [Lando](https://docs.lando.dev/getting-started/installation.html)
+* Install [VSCode](https://code.visualstudio.com/Download)
+
+```sh
+# Create project with composer demo
+composer create-project drupal/recommended-project [project_name] 
+```
+
+## What's within
 
 ```sh
 starter-template
-  - .vscode/
-    -- bin/
-      --- php #vscode 引用容器內php軟體的指令檔
-      --- phpcbf #vscode 引用容器內phpcbf軟體的指令檔
-      --- phpcs #vscode 引用容器內phpcs軟體的指令檔
+  - .vscode/ #vscode workspace settings
+    -- bin/ # Allows IDE to execute binary within lando container
+      --- php #vscode exec php binary from container
+      --- phpcbf #vscode exec phpcbf binary from container
+      --- phpcs #vscode exec phpcs binary from container
 
-    -- launch.json #vscode debugger 引用的設定檔
-    -- php.ini #lando 調校容器內部php與php.xdebug的設定檔
-    -- settings.json #vscode，
+    -- launch.json #vscode debugger
+    -- php.ini #lando https://docs.lando.dev/guides/lando-with-vscode.html
+    -- settings.json #vscode override settings for extensions by project
 
-  - .lando.yml #lando 複製到各專案根目錄底下的lando環境設定檔
-  - settings.local.php #drupal 應該複製到各Drupal專案的本地覆寫設定檔
+  - .lando.yml #lando base config file for lando dev environment
+  - settings.local.php #drupal should be replaced/override according to personal setup.
 ```
 
-## 使用方法
+## How to use
 
-* .vscode 資料夾本身，請複製到專案資料夾最上層
+* Copy *.vscode* directory to *[project_name]* folder.
   ```sh
-  cp -r starter-template/.vscode silverbelld9/.
+  cp -r starter-template/.vscode [project_name]/.
   ```
 
-* .lando.yml 檔案，若專案資料夾內並無相同檔案的話，請複製一份到專案資料夾最上層
+* Copy *.lando.yml* file to *[project_name]* if file doesn't exist.
   ```sh
-  cp starter-template/.lando.yml silverbelld9/.
+  cp starter-template/.lando.yml [project_name]/.
   ```
 
-* settings.local.php，請複製一份到 專案資料夾內以下相對位置 docroot/sites/default/.
+* Copy *settings.local.php* to [project_name]/web/sites/default/ and make sure last few lines of *settings.php* has been uncommented to allow local override.
+  ```php
+  # Uncomment these few lines in settings.php
+  
+  # if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
+  #   include $app_root . '/' . $site_path . '/settings.local.php';
+  # }
+  ```
   ```sh
-  cp starter-template/.settings.local.php silverbelld9/docroot/sites/default/.
+  cp starter-template/.settings.local.php [project_name]/web/sites/default/.
   ```
 
-## 可修改的參數
+* Rewrite contents of *.lando.yml* to fit your Drupal project.
+* Run `lando start` at project root.
+  ```sh
+  cd [project_name]
+  lando start
+  ```
+
+## What are these?
 
 ### Settings.json
 
-`settings.json` 檔是 VSCode 編輯器針對此專案資料夾的獨立設定檔。
+>VS Code provides several different scopes for settings. When you open a workspace, you will see at least the following two scopes:
+>
+>*User Settings* - Settings that apply globally to any instance of VS Code you open.<br>
+*Workspace Settings* - Settings stored inside your workspace and only apply when the workspace is opened.
+>
+> -- [VSCode - User and Workspace Settings](https://code.visualstudio.com/docs/getstarted/settings)
 
-以下設定所需安裝的 `extension`
+Install the following `extensions` to work with *settings.json*
 
 * [PHP Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
 * [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
@@ -50,8 +84,8 @@ starter-template
 {
   "php.validate.executablePath": ".vscode/bin/php",
   "php.debug.executablePath": ".vscode/bin/php",
-  "intelephense.environment.documentRoot": "docroot",
-  "intelephense.environment.phpVersion": "8.1.0", // 根據專案版本做修正
+  "intelephense.environment.documentRoot": "web", // check .lando.yml
+  "intelephense.environment.phpVersion": "8.1.0", // check .lando.yml
   "phpsab.executablePathCBF": ".vscode/bin/phpcbf",
   "phpsab.executablePathCS": ".vscode/bin/phpcs",
   "phpsab.fixerArguments": [
@@ -71,30 +105,31 @@ starter-template
 ### .lando.yml
 
 ```yaml
-name: silverbelld9 # 容器總稱
-recipe: drupal9 # 所使用的環境基礎食譜 https://docs.lando.dev/config/recipes.html
-config: # 修改食譜的參數 https://docs.lando.dev/drupal/config.html
-  webroot: docroot # 網站資料夾 index.html 的位置
-  xdebug: true # 是否預設開啟容器內的xdebug
-  php: '7.4' # 容器所套用的PHP版本
-  config: # 內部軟體覆寫設定檔
-    php: .vscode/php.ini # 取用本地存於.vscode資料夾內的php.ini檔案作為參數
-keys: # 於容器建立時自動載入的金鑰詳列於此
-  - develop_server.key
-# services: 若需要開啟phpmyadmin 的服務，請uncomment相關行數並 lando rebuild -y
+name: [project_name] # project name
+recipe: drupal9 # https://docs.lando.dev/config/recipes.html
+config: # https://docs.lando.dev/drupal/config.html
+  webroot: web # relative location of index.php from [project_root]
+  xdebug: true # xdebug on lando start
+  php: '8.1' # PHP version
+  config: # override container settings
+    php: .vscode/php.ini # override php.ini
+keys: # https://docs.lando.dev/core/v3/ssh.html#ssh-keys
+  - key_to_load.key
+# services: uncomment and run `lando rebuild -y` for phpmyadmin service
   # pma:
   #   type: phpmyadmin
   #   hosts:
   #     - database
-proxy: # 各容器的對本地用網址名稱
+proxy: # https://docs.lando.dev/core/v3/proxy.html#usage
   appserver:
-    - silverbelld9.lndo.site
+    - [project_name].lndo.site
   # pma:
   #   - pma-ed9.lndo.site
-tooling: # 專案下的客製化指令 可透過前綴指令 lando 來使用。Ex: lando dreset
+tooling: # custom command for lando env
+  # This allows usage of `lando drush cr`
   drush:
     service: appserver
     env:
-      DRUSH_OPTIONS_URI: "https://silverbelld9.lndo.site"
+      DRUSH_OPTIONS_URI: "https://[project_name].lndo.site"
 
 ```
