@@ -1,4 +1,4 @@
-name: example
+name: [project_name]
 recipe: drupal9
 config:
   webroot: docroot
@@ -19,14 +19,14 @@ services:
   #     - database
 proxy:
   appserver:
-    - example.lndo.site
+    - [project_name].lndo.site
   # pma:
-  #   - pma-ed9.lndo.site
+  #   - pma-[project_name].lndo.site
 tooling:
   drush:
     service: appserver
     env:
-      DRUSH_OPTIONS_URI: "https://example.lndo.site"
+      DRUSH_OPTIONS_URI: "https://[project_name].lndo.site"
 
   xdebug-on:
     service: appserver
@@ -61,11 +61,6 @@ tooling:
     cmd: vendor/bin/phpunit --configuration web/core
     description: Run PHPUnit tests on a specific file or Drupal module.
 
-  drupal-check:
-    service: appserver
-    cmd: vendor/bin/drupal-check -ad
-    description: Check Drupal code for deprecations and discover bugs via static analysis.
-
   dreset:
     service: appserver
     description: Update local db by remote db, reset config.
@@ -77,7 +72,7 @@ tooling:
       - drush updatedb -y
       - drush cim -y
       - drush cr -y
-      - drush uli / -l https://example.lndo.site
+      - drush uli / -l https://[project_name].lndo.site
     user: www-data
 
   updb:
@@ -89,6 +84,7 @@ tooling:
       - drush updatedb -y
       - drush cr
       - drush cex -y
+    user: www-data
 
   cex:
     service: appserver
