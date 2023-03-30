@@ -124,7 +124,7 @@ proxy: # https://docs.lando.dev/core/v3/proxy.html#usage
   appserver:
     - [project_name].lndo.site
   # pma:
-  #   - pma-ed9.lndo.site
+  #   - pma-[project_name].lndo.site
 tooling: # custom command for lando env
   # This allows usage of `lando drush cr`
   drush:
